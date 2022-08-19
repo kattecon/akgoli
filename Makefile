@@ -6,7 +6,7 @@ REFLEX_CMD := reflex -d none -s -r "(\.go$$|^Makefile$$|^go.mod$$|^go.sum$$)" --
 # Disable implicit rules
 .SUFFIXES:
 
-all: test
+all: build test
 
 build: temp/setup-dev
 	@go build ./...
