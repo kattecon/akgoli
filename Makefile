@@ -8,6 +8,9 @@ REFLEX_CMD := reflex -d none -s -r "(\.go$$|^Makefile$$|^go.mod$$|^go.sum$$)" --
 
 all: test
 
+build: temp/setup-dev
+	@go build ./...
+
 test: temp/setup-dev
 	@go test -timeout 5s -shuffle on -coverprofile=temp/coverage.out -cover ./... \
 		&& go tool cover -html=temp/coverage.out -o temp/coverage.html \
