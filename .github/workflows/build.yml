@@ -2,23 +2,38 @@ name: "Build"
 
 on:
   push:
-    branches: ["*"]
   pull_request:
-    branches: ["*"]
 
 jobs:
   build:
-    name: Analyze
+    name: Build
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
 
-    env:
-      CODEQL_EXTRACTOR_GO_BUILD_TRACING: 'on'
+      - name: Setup 'go'
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+          check-latest: true
+          cache: true
 
+      - name: Make
+        run: make
+
+      - name: Codecov
+        uses: codecov/codecov-action@v3.1.0
+        with:
+          file: ./temp/coverage.out
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -35,8 +50,8 @@ jobs:
         with:
           languages: "go"
 
-      - name: Build code
-        run: make
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
 
       - name: CodeQL analysis
         uses: github/codeql-action/analyze@v2
