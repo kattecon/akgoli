@@ -22,13 +22,9 @@ jobs:
       - name: Make
         run: make
 
-      - name: Codecov
-        uses: codecov/codecov-action@v3.1.0
-        with:
-          file: ./temp/coverage.out
-
   codeql:
     name: CodeQL
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       actions: read
