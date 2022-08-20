@@ -20,8 +20,12 @@ test: temp/setup-dev
 test-watch: temp/setup-dev
 	@$(REFLEX_CMD) make test
 
+# NOTE: Some of it is required by vscode
 temp/setup-dev: temp/temp Makefile
-	@go install -v github.com/cespare/reflex@latest \
+	@go install -v golang.org/x/tools/cmd/goimports@latest \
+		&& go install -v github.com/cespare/reflex@latest \
+		&& go install -v golang.org/x/tools/gopls@latest \
+		&& go install -v github.com/ramya-rao-a/go-outline@latest \
 		&& go install -v honnef.co/go/tools/cmd/staticcheck@latest \
 		&& go install -v github.com/caarlos0/svu@latest \
 		&& touch temp/setup-dev
