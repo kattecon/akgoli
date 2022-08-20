@@ -1,7 +1,10 @@
 package utils
 
-import "strings"
+import (
+	"strings"
+	"unicode/utf8"
+)
 
 func MaskAll(s string) string {
-	return strings.Repeat("*", len(s))
+	return strings.Repeat("*", utf8.RuneCountInString(s))
 }
