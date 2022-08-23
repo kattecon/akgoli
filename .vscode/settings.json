@@ -15,6 +15,7 @@
         "secretbox",
         "stretchr",
         "testutils",
+        "typesafe",
         "zapcore"
     ]
 }
