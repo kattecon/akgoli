@@ -63,3 +63,28 @@ func TestSyncMap(t *testing.T) {
 	assert.True(t, yFound)
 	assert.False(t, otherFound)
 }
+
+func TestSyncMapLoadOrCompute(t *testing.T) {
+	var m SyncMap[string, int]
+
+	computed := false
+	v, loaded := m.LoadOrCompute("x", func() int {
+		computed = true
+		return 10
+	})
+
+	assert.True(t, computed)
+	assert.False(t, loaded)
+	assert.Equal(t, 10, v)
+
+	computed = false
+	v, loaded = m.LoadOrCompute("x", func() int {
+		computed = true
+		return 15
+	})
+
+	assert.False(t, computed)
+	assert.True(t, loaded)
+	assert.Equal(t, 10, v)
+
+}
