@@ -5,31 +5,27 @@ import (
 	"net/http"
 
 	"github.com/akshaal/akgoli/absos"
+	"github.com/akshaal/akgoli/appinfo"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/expfmt"
 )
 
-type MetricsParams struct {
-	Prefix     string
-	AppVersion string
-}
-
 type Metrics struct {
-	reg    *prometheus.Registry
-	params *MetricsParams
+	reg     *prometheus.Registry
+	appInfo appinfo.AppInfo
 }
 
-func NewMetricsWithoutDefaultCollectors(params *MetricsParams) *Metrics {
+func NewMetricsWithoutDefaultCollectors(appInfo appinfo.AppInfo) *Metrics {
 	return &Metrics{
-		reg:    prometheus.NewRegistry(),
-		params: params,
+		reg:     prometheus.NewRegistry(),
+		appInfo: appInfo,
 	}
 }
 
-func NewMetrics(params *MetricsParams, timeSvc absos.TimeSvc) *Metrics {
-	m := NewMetricsWithoutDefaultCollectors(params)
+func NewMetrics(appInfo appinfo.AppInfo, timeSvc absos.TimeSvc) *Metrics {
+	m := NewMetricsWithoutDefaultCollectors(appInfo)
 
 	m.MustRegister(
 		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
@@ -44,13 +40,13 @@ func NewMetrics(params *MetricsParams, timeSvc absos.TimeSvc) *Metrics {
 		[]string{"version"},
 	)
 	m.MustRegister(startupGauge)
-	startupGauge.WithLabelValues(params.AppVersion).Set(float64(timeSvc.Now().UnixNano()) / 1e9)
+	startupGauge.WithLabelValues(appInfo.AppVersion()).Set(float64(timeSvc.Now().UnixNano()) / 1e9)
 
 	return m
 }
 
 func (m *Metrics) Prefixed(name string) string {
-	return m.params.Prefix + "_" + name
+	return m.appInfo.AppIdName() + "_" + name
 }
 
 func (m *Metrics) MustRegister(cs ...prometheus.Collector) {

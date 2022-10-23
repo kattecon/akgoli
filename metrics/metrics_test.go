@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/akshaal/akgoli/absos"
+	"github.com/akshaal/akgoli/appinfo"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,9 +16,9 @@ import (
 func TestNewMetrics(t *testing.T) {
 	timeSvc := absos.NewFakeTimeSvc()
 	timeSvc.Add(24 * 365 * 260 * time.Hour)
-	m := NewMetrics(&MetricsParams{Prefix: "ff", AppVersion: "2.10.3"}, timeSvc)
+	m := NewMetrics(appinfo.Mock(), timeSvc)
 
-	assert.Equal(t, "ff_xx", m.Prefixed("xx"))
+	assert.Equal(t, "mock_xx", m.Prefixed("xx"))
 
 	counter := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
@@ -48,11 +49,11 @@ func TestNewMetrics(t *testing.T) {
 	assert.Contains(t, out, "go_gc_duration_seconds")
 	assert.Contains(t, out, "process_cpu_seconds_total")
 	assert.Contains(t, out, "my_test_counter321{code=\"404\",method=\"POST\"} 42")
-	assert.Contains(t, out, `ff_startup{version="2.10.3"} 1.403995421128655e+09`)
+	assert.Contains(t, out, `mock_startup{version="1.2.3"} 1.403995421128655e+09`)
 }
 
 func TestNewMetricsWithoutDefaultCollectors(t *testing.T) {
-	m := NewMetricsWithoutDefaultCollectors(&MetricsParams{Prefix: "mm", AppVersion: "2.10.3"})
+	m := NewMetricsWithoutDefaultCollectors(appinfo.Mock())
 
 	counter := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
@@ -96,7 +97,7 @@ func TestNewMetricsWithoutDefaultCollectors(t *testing.T) {
 }
 
 func TestJustDumpAsTextForTest(t *testing.T) {
-	m := NewMetricsWithoutDefaultCollectors(&MetricsParams{Prefix: "mm", AppVersion: "2.10.3"})
+	m := NewMetricsWithoutDefaultCollectors(appinfo.Mock())
 
 	counter := prometheus.NewCounterVec(
 		prometheus.CounterOpts{

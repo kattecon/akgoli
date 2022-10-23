@@ -11,7 +11,7 @@ type TimeSvcImpl struct{}
 
 var timeSvcImpl = TimeSvcImpl{}
 
-func NewTimeSvc() TimeSvcImpl {
+func NewTimeSvc() TimeSvc {
 	return timeSvcImpl
 }
 
