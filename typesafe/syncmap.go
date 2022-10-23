@@ -28,6 +28,17 @@ func (m *SyncMap[K, V]) LoadOrStore(key K, value V) (actual V, loaded bool) {
 	return a.(V), loaded
 }
 
+func (m *SyncMap[K, V]) LoadOrCompute(key K, f func() V) (actual V, loaded bool) {
+	// Assuming misses are rare
+
+	a, loaded := m.Load(key)
+	if loaded {
+		return a, loaded
+	}
+
+	return m.LoadOrStore(key, f())
+}
+
 func (m *SyncMap[K, V]) LoadAndDelete(key K) (value V, loaded bool) {
 	a, loaded := m.inner.LoadAndDelete(key)
 	if !loaded {
