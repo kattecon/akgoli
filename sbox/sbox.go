@@ -11,7 +11,7 @@ import (
 )
 
 // Encrypts and authenticates small messages. Wrapper around "secretbox".
-// Unlike secretbox, sbox maintains takes care of nonce and keys itself.
+// Unlike secretbox, sbox takes care of nonce and keys itself.
 
 const (
 	secretKeySize = 32
@@ -26,12 +26,12 @@ type SBoxSvc interface {
 	Decode(encoded string, value any) error
 }
 
-type SBoxSvcImpl struct {
+type sboxSvcImpl struct {
 	secretKey [secretKeySize]byte
 }
 
-func NewSBoxSvc() *SBoxSvcImpl {
-	var sb SBoxSvcImpl
+func NewSBoxSvc() SBoxSvc {
+	var sb sboxSvcImpl
 
 	nr, err := rand.Read(sb.secretKey[:])
 	if nr != secretKeySize || err != nil {
@@ -41,7 +41,7 @@ func NewSBoxSvc() *SBoxSvcImpl {
 	return &sb
 }
 
-func (sb *SBoxSvcImpl) Encode(value any) (string, error) {
+func (sb *sboxSvcImpl) Encode(value any) (string, error) {
 	// Serialize value
 	data, err := json.Marshal(value)
 	if err != nil {
@@ -65,7 +65,7 @@ func (sb *SBoxSvcImpl) Encode(value any) (string, error) {
 	return string(encoded), nil
 }
 
-func (sb *SBoxSvcImpl) Decode(encoded string, value any) error {
+func (sb *sboxSvcImpl) Decode(encoded string, value any) error {
 	// NOTE: No errors are wrapped to avoid extra allocations
 
 	if len(encoded) <= nonceSize {

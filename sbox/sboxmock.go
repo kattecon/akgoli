@@ -7,13 +7,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-type FakeSBoxSvcImpl struct{}
+type sboxSvcMockImpl struct{}
 
-func NewFakeSBoxSvc() FakeSBoxSvcImpl {
-	return FakeSBoxSvcImpl{}
+func NewSBoxSvcMock() SBoxSvc {
+	return sboxSvcMockImpl{}
 }
 
-func (sb FakeSBoxSvcImpl) Encode(value any) (string, error) {
+func (sb sboxSvcMockImpl) Encode(value any) (string, error) {
 	// Serialize value
 	data, err := json.Marshal(value)
 	if err != nil {
@@ -23,7 +23,7 @@ func (sb FakeSBoxSvcImpl) Encode(value any) (string, error) {
 	return url.QueryEscape(string(data)), nil
 }
 
-func (sb FakeSBoxSvcImpl) Decode(encoded string, value any) error {
+func (sb sboxSvcMockImpl) Decode(encoded string, value any) error {
 	r, _ := url.QueryUnescape(encoded)
 	return json.Unmarshal([]byte(r), value)
 }

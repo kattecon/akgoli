@@ -9,8 +9,8 @@ import (
 )
 
 func TestFake(t *testing.T) {
-	sb1 := NewFakeSBoxSvc()
-	sb2 := NewFakeSBoxSvc()
+	sb1 := NewSBoxSvcMock()
+	sb2 := NewSBoxSvcMock()
 
 	_, err := sb1.Encode(testStruct{B: math.NaN()})
 	assert.NotNil(t, err)

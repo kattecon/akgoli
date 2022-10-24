@@ -5,35 +5,35 @@ import (
 	"time"
 )
 
-type FakeTimeSvcImpl struct {
+type TimeSvcMockImpl struct {
 	Time time.Time
 
 	StopSleepingRequest chan any
 	DoneSleeping        chan time.Duration
 }
 
-func NewFakeTimeSvc() *FakeTimeSvcImpl {
-	return &FakeTimeSvcImpl{
+func NewTimeSvcMock() *TimeSvcMockImpl {
+	return &TimeSvcMockImpl{
 		StopSleepingRequest: make(chan any),
 		DoneSleeping:        make(chan time.Duration),
 	}
 }
 
-func (svc *FakeTimeSvcImpl) Now() time.Time {
+func (svc *TimeSvcMockImpl) Now() time.Time {
 	return svc.Time
 }
 
-func (svc *FakeTimeSvcImpl) Add(d time.Duration) {
+func (svc *TimeSvcMockImpl) Add(d time.Duration) {
 	svc.Time = svc.Time.Add(d)
 }
 
-func (svc *FakeTimeSvcImpl) Sleep(d time.Duration) {
+func (svc *TimeSvcMockImpl) Sleep(d time.Duration) {
 	<-svc.StopSleepingRequest
 	svc.DoneSleeping <- d
 	runtime.Gosched()
 }
 
-func (svc *FakeTimeSvcImpl) GetSleptDuration() time.Duration {
+func (svc *TimeSvcMockImpl) GetSleptDuration() time.Duration {
 	svc.StopSleepingRequest <- nil
 	return <-svc.DoneSleeping
 }

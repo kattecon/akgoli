@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFakeTimeSvc(t *testing.T) {
-	svc := NewFakeTimeSvc()
+func TestTimeSvcMock(t *testing.T) {
+	svc := NewTimeSvcMock()
 
 	t1 := svc.Now()
 	time.Sleep(1 * time.Millisecond)
@@ -22,8 +22,8 @@ func TestFakeTimeSvc(t *testing.T) {
 	assert.Equal(t, t2.Add(100*time.Microsecond), svc.Now())
 }
 
-func TestFakeTimeSvcSleep(t *testing.T) {
-	svc := NewFakeTimeSvc()
+func TestTimeSvcMockSleep(t *testing.T) {
+	svc := NewTimeSvcMock()
 
 	go func() {
 		svc.Sleep(100)

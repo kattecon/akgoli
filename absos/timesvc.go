@@ -7,18 +7,18 @@ type TimeSvc interface {
 	Sleep(d time.Duration)
 }
 
-type TimeSvcImpl struct{}
+type timeSvcImpl struct{}
 
-var timeSvcImpl = TimeSvcImpl{}
+var timeSvcImplInstance = timeSvcImpl{}
 
 func NewTimeSvc() TimeSvc {
-	return timeSvcImpl
+	return timeSvcImplInstance
 }
 
-func (TimeSvcImpl) Now() time.Time {
+func (timeSvcImpl) Now() time.Time {
 	return time.Now()
 }
 
-func (TimeSvcImpl) Sleep(d time.Duration) {
+func (timeSvcImpl) Sleep(d time.Duration) {
 	time.Sleep(d)
 }

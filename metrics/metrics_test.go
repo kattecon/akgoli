@@ -14,7 +14,7 @@ import (
 )
 
 func TestNewMetrics(t *testing.T) {
-	timeSvc := absos.NewFakeTimeSvc()
+	timeSvc := absos.NewTimeSvcMock()
 	timeSvc.Add(24 * 365 * 260 * time.Hour)
 	m := NewMetrics(appinfo.Mock(), timeSvc)
 
