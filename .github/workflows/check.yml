@@ -23,8 +23,8 @@ jobs:
       - name: Test
         run: make build test
 
-  codeql:
-    name: CodeQL
+  codeql_run:
+    name: CodeQLRun
     runs-on: ubuntu-latest
     permissions:
       actions: read
