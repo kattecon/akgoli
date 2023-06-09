@@ -5,8 +5,8 @@ on:
   push:
 
 jobs:
-  build:
-    name: Build
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -20,12 +20,11 @@ jobs:
           check-latest: true
           cache: true
 
-      - name: Make
-        run: make all
+      - name: Test
+        run: make build test
 
-  codeql:
-    name: CodeQL
-    needs: build
+  codeql_run:
+    name: CodeQLRun
     runs-on: ubuntu-latest
     permissions:
       actions: read
