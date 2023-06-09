@@ -14,7 +14,6 @@ func NewSBoxSvcMock() SBoxSvc {
 }
 
 func (sb sboxSvcMockImpl) Encode(value any) (string, error) {
-	// Serialize value
 	data, err := json.Marshal(value)
 	if err != nil {
 		return "", errors.Wrap(err, "could not serialize value")
