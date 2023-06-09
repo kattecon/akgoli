@@ -1,8 +1,8 @@
 name: "Build"
 
 on:
+  workflow_dispatch:
   push:
-  pull_request:
 
 jobs:
   build:
@@ -10,17 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.2
 
       - name: Setup 'go'
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4.0.1
         with:
           go-version-file: 'go.mod'
+          cache-dependency-path: "go.sum"
           check-latest: true
           cache: true
 
       - name: Make
-        run: make
+        run: make all
 
   codeql:
     name: CodeQL
@@ -32,23 +33,24 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.2
 
       - name: Setup 'go'
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4.0.1
         with:
           go-version-file: 'go.mod'
+          cache-dependency-path: "go.sum"
           check-latest: true
           cache: true
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v2.3.6
         with:
           queries: +security-and-quality
           languages: "go"
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@v2.3.6
 
       - name: CodeQL analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v2.3.6
