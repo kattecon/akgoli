@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
-	"github.com/akshaal/akgoli/utils"
+	"github.com/kattecon/akgoli/utils"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/nacl/secretbox"
 )

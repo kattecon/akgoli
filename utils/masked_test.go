@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/akshaal/akgoli/testutils"
+	"github.com/kattecon/akgoli/testutils"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )

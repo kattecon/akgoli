@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"github.com/akshaal/akgoli/metrics"
+	"github.com/kattecon/akgoli/metrics"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
