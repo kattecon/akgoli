@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"net/http"
 
-	"github.com/akshaal/akgoli/absos"
-	"github.com/akshaal/akgoli/appinfo"
+	"github.com/kattecon/akgoli/absos"
+	"github.com/kattecon/akgoli/appinfo"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

@@ -3,9 +3,9 @@ package logging
 import (
 	"testing"
 
-	"github.com/akshaal/akgoli/appinfo"
-	"github.com/akshaal/akgoli/metrics"
-	"github.com/akshaal/akgoli/testutils"
+	"github.com/kattecon/akgoli/appinfo"
+	"github.com/kattecon/akgoli/metrics"
+	"github.com/kattecon/akgoli/testutils"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )

@@ -1,4 +1,4 @@
-module github.com/akshaal/akgoli
+module github.com/kattecon/akgoli
 
 go 1.20
 

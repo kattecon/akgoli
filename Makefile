@@ -13,7 +13,7 @@ build: temp/setup-dev
 
 test: temp/setup-dev
 	@go test -timeout 5s -shuffle on -coverprofile=temp/coverage.out \
-			-ldflags="-X \"github.com/akshaal/akgoli/appinfo.version=3.2.1\" -X \"github.com/akshaal/akgoli/appinfo.idName=test\"" \
+			-ldflags="-X \"github.com/kattecon/akgoli/appinfo.version=3.2.1\" -X \"github.com/kattecon/akgoli/appinfo.idName=test\"" \
 			-cover ./... \
 		&& go tool cover -html=temp/coverage.out -o temp/coverage.html \
 		&& echo "\n\nUse to open coverage report: ${akc_cmd}firefox temp/coverage.html\n\n${akc_default}" \

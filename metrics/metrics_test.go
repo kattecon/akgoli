@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/akshaal/akgoli/absos"
-	"github.com/akshaal/akgoli/appinfo"
+	"github.com/kattecon/akgoli/absos"
+	"github.com/kattecon/akgoli/appinfo"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 )
