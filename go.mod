@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.22.7
 
 require (
-	github.com/prometheus/common v0.55.0
+	github.com/prometheus/common v0.57.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.26.0
 )
