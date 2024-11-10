@@ -2,7 +2,7 @@ module github.com/kattecon/akgoli
 
 go 1.21
 
-toolchain go1.22.8
+toolchain go1.22.9
 
 require (
 	github.com/prometheus/common v0.60.1
