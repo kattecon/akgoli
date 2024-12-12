@@ -16,7 +16,7 @@ func TestTimeSvcMock(t *testing.T) {
 
 	svc.Add(100 * time.Microsecond)
 
-	assert.NotSame(t, t1, t2)
+	assert.NotSame(t, &t1, &t2)
 	assert.Equal(t, t1, t2)
 	assert.Equal(t, svc.Time, svc.Now())
 	assert.Equal(t, t2.Add(100*time.Microsecond), svc.Now())
