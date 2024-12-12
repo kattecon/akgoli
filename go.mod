@@ -6,7 +6,7 @@ toolchain go1.22.10
 
 require (
 	github.com/prometheus/common v0.60.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/crypto v0.31.0
 )
 
