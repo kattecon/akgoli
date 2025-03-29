@@ -1,13 +1,13 @@
 module github.com/kattecon/akgoli
 
-go 1.23
+go 1.23.0
 
 toolchain go1.23.7
 
 require (
 	github.com/prometheus/common v0.63.0
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.35.0
 )
 
 require (
