@@ -29,7 +29,7 @@ func (m *SyncMap[K, V]) LoadOrStore(key K, value V) (actual V, loaded bool) {
 }
 
 func (m *SyncMap[K, V]) LoadOrCompute(key K, f func() V) (actual V, loaded bool) {
-	// Assuming misses are rare
+	// Assuming misses are rare.
 
 	a, loaded := m.Load(key)
 	if loaded {

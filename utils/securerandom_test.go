@@ -8,7 +8,7 @@ import (
 )
 
 func TestGenSecureRandomId(t *testing.T) {
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		for _, l := range []int{80, 100, 200} {
 			s1 := GenSecureRandomId(l)
 			s2 := GenSecureRandomId(l)
