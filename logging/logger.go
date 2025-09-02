@@ -53,7 +53,7 @@ func NewLogger(cfg LoggerConfig, m *metrics.Metrics) (*zap.Logger, error) {
 	)
 	m.MustRegister(logEventsCounter)
 
-	// Set initial counter to zero for each log level
+	// Set initial counter to zero for each log level.
 	// (grafana/prometheus might otherwise have problems doing math and distinguishing between missing/zero values...)
 	logEventsCounter.WithLabelValues(zap.DebugLevel.String()).Add(0)
 	logEventsCounter.WithLabelValues(zap.InfoLevel.String()).Add(0)

@@ -69,7 +69,7 @@ func TestNewLoggerDebugLogging(t *testing.T) {
 	assert.Contains(t, m.DumpAsTextForTest(), `mock_log_events{level="error"} 1`)
 	assert.Contains(t, m.DumpAsTextForTest(), `mock_log_events{level="info"} 1`)
 
-	// '2' because there is also "Logged initialized message"
+	// '2' because there is also "Logged initialized message".
 	assert.Contains(t, m.DumpAsTextForTest(), `mock_log_events{level="debug"} 2`)
 
 	assert.Contains(t, m.DumpAsTextForTest(), `mock_log_events{level="fatal"} 0`)

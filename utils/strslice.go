@@ -22,7 +22,7 @@ func RemoveStrFromSliceInPlace(slice []string, target string) []string {
 	}
 }
 
-// Trim slice
+// Trim slice.
 func TrimAllInPlace(slice []string) []string {
 	for i, s := range slice {
 		slice[i] = strings.TrimSpace(s)

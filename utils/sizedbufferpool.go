@@ -43,9 +43,9 @@ func (bp *SizedBufferPool) WithBuffer(f func(b *bytes.Buffer)) {
 func (bp *SizedBufferPool) get() (b *bytes.Buffer) {
 	select {
 	case b = <-bp.c:
-	// reuse existing buffer
+	// reuse existing buffer.
 	default:
-		// create new buffer
+		// create new buffer.
 		b = bytes.NewBuffer(make([]byte, 0, bp.a))
 	}
 	return
