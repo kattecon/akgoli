@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func CapturePanicValue(f func()) (recovered interface{}) {
+func CapturePanicValue(f func()) (recovered any) {
 	defer func() {
 		recovered = recover()
 	}()

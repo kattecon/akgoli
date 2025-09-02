@@ -42,23 +42,23 @@ func NewSBoxSvc() SBoxSvc {
 }
 
 func (sb *sboxSvcImpl) Encode(value any) (string, error) {
-	// Serialize value
+	// Serialize value.
 	data, err := json.Marshal(value)
 	if err != nil {
 		return "", errors.Wrap(err, "could not serialize value")
 	}
 
-	// Generate nonce
+	// Generate nonce.
 	var nonce [nonceSize]byte
 	nr, err := rand.Read(nonce[:])
 	if nr != nonceSize || err != nil {
 		panic(err)
 	}
 
-	// Encrypt data. First argument to the seal says that nonce must be prepended in the encrypted data
+	// Encrypt data. First argument to the seal says that nonce must be prepended in the encrypted data.
 	encrypted := secretbox.Seal(nonce[:], data, &nonce, &sb.secretKey)
 
-	// Encode
+	// Encode.
 	encoded := make([]byte, base64.URLEncoding.EncodedLen(len(encrypted)))
 	base64.URLEncoding.Encode(encoded, encrypted)
 
@@ -66,7 +66,7 @@ func (sb *sboxSvcImpl) Encode(value any) (string, error) {
 }
 
 func (sb *sboxSvcImpl) Decode(encoded string, value any) error {
-	// NOTE: No errors are wrapped to avoid extra allocations
+	// NOTE: No errors are wrapped to avoid extra allocations.
 
 	if len(encoded) <= nonceSize {
 		return ErrWrongEncodedSize
