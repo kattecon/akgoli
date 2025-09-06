@@ -42,7 +42,7 @@ require (
 	golang.org/x/tools/gopls v0.20.0 // indirect
 	golang.org/x/vuln v1.1.4 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
-	honnef.co/go/tools v0.7.0-0.dev.0.20250523013057-bbc2f4dd71ea // indirect
+	honnef.co/go/tools v0.7.0-0.dev // indirect
 	mvdan.cc/gofumpt v0.8.0 // indirect
 	mvdan.cc/xurls/v2 v2.6.0 // indirect
 )
