@@ -15,7 +15,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/caarlos0/svu v1.12.0 // indirect
+	github.com/caarlos0/svu/v2 v2.2.0 // indirect
 	github.com/cespare/reflex v0.3.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/creack/pty v1.1.11 // indirect
