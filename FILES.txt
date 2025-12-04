@@ -1,0 +1,77 @@
+FILES.txt: File index, this file; single-line desc per file. Shows where to find things and what to look for.
+.editorconfig: EditorConfig file; cross-editor formatting rules.
+.markdownlint.jsonc: markdownlint config; adjusts rules for Prettier compat, enables needed HTML; auto-discovered by IDE/CLI tools.
+go.mod: Go module def; module path, Go ver, versioned deps.
+go.sum: Dep checksum file; auto-gen SHA256 hashes for go.mod deps; go toolchain verifies integrity.
+LICENSE: Apache License; open-source terms w/ patent protection; allows commercial use, protects contributors.
+Makefile: Automates Go build/test/lint workflow; bundles build, coverage, staticcheck, vet into simple targets; test-watch mode for dev; used by CI.
+README.md: Proj overview; personal utility lib reused across private projects.
+renovate.json: Renovate Bot config; automates dependency updates via PRs.
+.vscode/settings.json: VS Code config.
+absos/dnssvc.go: DnsSvc interface w/ DnsSvc.LookupIP(); abstracts net.LookupIP for testable DNS w/o real network.
+absos/dnssvc.go: NewDnsSvc() factory returns prod impl; wraps net.LookupIP.
+absos/dnssvc_test.go: Tests DnsSvc; DNS lookups for localhost/IPs, invalid hostname error handling.
+absos/dnssvcmock.go: DnsSvcMockImpl mock impl of DnsSvc; controlled DNS responses, simulates delays w/ TimeSvc.
+absos/dnssvcmock.go: NewDnsSvcMock(timeSvc) factory; creates mock w/ time control for deterministic tests.
+absos/dnssvcmock.go: DnsSvcMockImpl.SetLookupIpResult/WithDuration() sets mock DNS responses per hostname; enables error/delay testing.
+absos/dnssvcmock.go: DnsSvcMockImpl.Clear*() methods reset mock state; isolates tests.
+absos/dnssvcmock_test.go: Tests DnsSvcMockImpl; mock responses, delay simulation w/ TimeSvcMock, clear methods, error handling.
+absos/timesvc.go: TimeSvc interface w/ Now()/Sleep(); abstracts time.Now/Sleep for testable time w/o real delays.
+absos/timesvc.go: NewTimeSvc() factory returns prod impl; wraps time.Now/Sleep.
+absos/timesvc_test.go: Tests TimeSvc; singleton pattern, real time progression, Sleep() duration validation.
+absos/timesvcmock.go: TimeSvcMockImpl mock impl of TimeSvc; controlled time advancement, syncs w/ sleeping goroutines for deterministic tests.
+absos/timesvcmock.go: NewTimeSvcMock() factory; creates mock w/ zero time, no sleepers.
+absos/timesvcmock.go: TimeSvcMockImpl.Add()/AdvanceToNextSleepEvent() advance mock time; trigger sleeper wakeups when due time reached.
+absos/timesvcmock.go: TimeSvcMockImpl.WaitForSleepers() blocks until N sleepers register; ensures test sync before time advancement.
+absos/timesvcmock_test.go: Tests TimeSvcMockImpl; time control, concurrent Sleep() w/ goroutines, sleeper release order, sync validation.
+appinfo/appinfo.go: AppInfo interface w/ AppIdName()/AppVersion()/GoVersion(); provides build-time injected metadata for metrics/logging.
+appinfo/appinfo.go: Get() factory returns singleton impl; version/idName set via -ldflags at build, GoVersion from runtime.
+appinfo/appinfo_test.go: Tests AppInfo; normal ops, empty var edge cases ("unknown" fallback), withSavedValues pattern for pkg-level state testing w/o pollution.
+appinfo/mock.go: Mock() returns AppInfo w/ fixed values; test replacement for Get() w/o -ldflags build injection.
+appinfo/mock_test.go: Tests Mock(); verifies AppInfo mock returns expected fixed values.
+logging/logger.go: LoggerConfig interface w/ IsDebugLogging()/IsDevStyleLogging(); config for logger format/level.
+logging/logger.go: NewSimpleLoggerConfig() returns test impl w/ setters; for tests w/o complex config.
+logging/logger.go: NewLogger(cfg, metrics) creates zap logger w/ Prom metrics; counts events by level, init to 0 for Grafana.
+logging/logger_test.go: Tests NewLogger; format (JSON/human), level filtering, stacktrace disabled, Prom metrics counting.
+metrics/metrics.go: Metrics struct wraps Prom registry; app-aware naming via Prefixed(), HTTP handler, test dump; injectable alt to global registry.
+metrics/metrics.go: NewMetrics(appInfo, timeSvc) creates Metrics w/ process/Go collectors & startup gauge; use for prod apps needing runtime metrics.
+metrics/metrics.go: NewMetricsWithoutDefaultCollectors(appInfo) creates minimal Metrics; use in tests to avoid process collector noise.
+metrics/metrics_test.go: Tests Metrics; default collectors on/off, HTTP handler, startup gauge w/ TimeSvcMock, custom registration, DumpAsTextForTest.
+sbox/sbox.go: SBoxSvc interface w/ Encode()/Decode(); authenticated encryption for JSON-serializable data w/ auto key/nonce.
+sbox/sbox.go: NewSBoxSvc() factory returns impl w/ ephemeral key; each instance isolated, cannot decrypt others' data.
+sbox/sbox_test.go: Tests SBoxSvc; encryption, service isolation, semantic security (Levenshtein >80%), no leakage, errors; crypto testing pattern.
+sbox/sboxmock.go: NewSBoxSvcMock() factory returns test impl; deterministic encoding.
+sbox/sboxmock_test.go: Tests SBoxSvcMock; deterministic behavior, cross-instance compatibility, visible plaintext, error handling.
+testutils/buflog.go: NewBufferingLogger(level) creates zap logger w/ in-memory buffer; captures log output for test assertions w/o I/O.
+testutils/buflog.go: BufferingLogger.JsonNoDoubleQuotes() converts buffer to JSON w/ single quotes; simplifies test assertions (no escaping).
+testutils/buflog_test.go: Tests BufferingLogger; log level filtering, buffer capture, quote conversion.
+testutils/capture.go: CapturePanicValue(f) captures panic value from func exec; enables testing panic behavior w/o crashing tests.
+testutils/capture.go: CaptureStderrNoDoubleQuotes(f) captures stderr w/ "→' replacement.
+testutils/capture.go: CaptureStdoutNoDoubleQuotes(f) captures stdout w/ "→' replacement.
+testutils/capture_test.go: Tests capture funcs; stderr/stdout capture, panic recovery, stream restoration.
+testutils/httproundtrip.go: RoundTripFunc type lets funcs implement http.RoundTripper; concise HTTP transport mocks w/o struct boilerplate.
+testutils/httproundtrip_test.go: Tests RoundTripFunc; verifies http.RoundTripper impl, request/response/error passthrough.
+typesafe/syncmap.go: SyncMap[K,V] wraps sync.Map w/ generics; compile-time safety prevents type assertion panics.
+typesafe/syncmap_test.go: Tests SyncMap; Load/Store/Delete/LoadOrStore/LoadAndDelete/Range ops, LoadOrCompute lazy init.
+utils/constanttime.go: ConstantTimeStringEquals() timing-attack-safe string comparison; execution time depends only on length; for secrets/passwords/tokens/HMAC.
+utils/constanttime_test.go: Tests ConstantTimeStringEquals; equality, length diff, case sensitivity, whitespace, empty/edge cases.
+utils/consterr.go: ConstError string type implements error; compile-time constants for sentinel error pattern; zero-allocation vs errors.New().
+utils/consterr_test.go: Tests ConstError; Error() method correctness, string-to-error conversion.
+utils/mask.go: MaskAll() converts strings to asterisks preserving rune count; redacts sensitive data in logs/output while showing length; Unicode-safe.
+utils/mask_test.go: Tests MaskAll(); Unicode handling, length preservation, empty strings.
+utils/securerandom.go: GenSecureRandomId() generates crypto-secure alphanumeric IDs via crypto/rand; for session tokens/API keys/nonces.
+utils/securerandom_test.go: Tests GenSecureRandomId(); uniqueness, length correctness, high Levenshtein distance (semantic security).
+utils/sizedbufferpool.go: NewSizedBufferPool() bounded bytes.Buffer pool w/ pre-alloc capacity; reduces allocations.
+utils/sizedbufferpool.go: SizedBufferPool.WithBuffer() runs func w/ pooled buffer; auto-cleanup via defer.
+utils/sizedbufferpool_test.go: Tests SizedBufferPool; capacity pre-alloc, oversized buffer replacement, WithBuffer, pool bounds.
+utils/masked.go: Masked() creates zap field w/ auto-masked value; prevents secrets in logs.
+utils/masked_test.go: Tests Masked(); value masking in zap log output.
+utils/strslice.go: RemoveStrFromSliceInPlace() removes all occurrences of target string from slice; mutates in-place avoiding allocations.
+utils/strslice.go: TrimAllInPlace() trims whitespace from all strings in slice; mutates in-place avoiding allocations.
+utils/strslice_test.go: Tests RemoveStrFromSliceInPlace & TrimAllInPlace; duplicates, in-place mutation, empty results, whitespace.
+utils/takedroprunes.go: TakeRunes() returns first n runes from string; Unicode-safe alternative to s[:n] prevents UTF-8 corruption.
+utils/takedroprunes.go: DropRunes() returns string after dropping first n runes; Unicode-safe alternative to s[n:] prevents UTF-8 corruption.
+utils/takedroprunes_test.go: Tests TakeRunes & DropRunes; empty/boundary cases, multi-char strings, Cyrillic Unicode (verifies rune-based ops prevent UTF-8 corruption vs byte slicing).
+utils/word.go: IsAsciiWord() validates string contains only ASCII letters (a-z, A-Z); rejects digits/Unicode/special chars; for strict alphabetic validation.
+utils/word.go: IsAsciiWordWithDigits() validates ASCII letters w/ optional digits after first char; enforces letter-first rule (like prog identifiers).
+utils/word_test.go: Tests IsAsciiWord & IsAsciiWordWithDigits; ASCII-only validation, Unicode rejection (Cyrillic/Nordic), letter-first rule, digits placement, empty/edge cases.
