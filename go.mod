@@ -9,6 +9,11 @@ require (
 )
 
 require (
+	github.com/rogpeppe/go-internal v1.14.1 // indirect
+	golang.org/x/tools/go/expect v0.1.1-deprecated // indirect
+)
+
+require (
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/alecthomas/kingpin v2.2.6+incompatible // indirect
@@ -19,12 +24,8 @@ require (
 	github.com/cespare/reflex v0.3.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/creack/pty v1.1.11 // indirect
-	github.com/fatih/camelcase v1.0.0 // indirect
-	github.com/fatih/gomodifytags v1.17.1-0.20250423142747-f3939df9aa3c // indirect
-	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ogier/pflag v0.0.1 // indirect
@@ -38,14 +39,9 @@ require (
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/telemetry v0.0.0-20250908211612-aef8a434d053 // indirect
-	golang.org/x/text v0.30.0 // indirect
 	golang.org/x/tools v0.37.0 // indirect
-	golang.org/x/tools/gopls v0.20.0 // indirect
-	golang.org/x/vuln v1.1.4 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
-	honnef.co/go/tools v0.6.1
-	mvdan.cc/gofumpt v0.8.0 // indirect
-	mvdan.cc/xurls/v2 v2.6.0 // indirect
+	honnef.co/go/tools v0.6.1 // indirect
 )
 
 require (
@@ -58,11 +54,12 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
+// NOTE: Do NOT add golang.org/x/tools/gopls here! It depends (at least it did that at time of writing) on a dev version
+// of honnef.co/go/tools which breaks Renovate with weird conflicting deps.
 tool (
 	github.com/caarlos0/svu
 	github.com/cespare/reflex
 	github.com/ramya-rao-a/go-outline
 	golang.org/x/tools/cmd/goimports
-	golang.org/x/tools/gopls
 	honnef.co/go/tools/cmd/staticcheck
 )
