@@ -17,10 +17,10 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/caarlos0/svu/v3 v3.3.0 // indirect
-	github.com/cespare/reflex v0.3.1 // indirect
+	github.com/caarlos0/svu v1.12.0 // indirect
+	github.com/cespare/reflex v0.3.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/creack/pty v1.1.11 // indirect
+	github.com/creack/pty v1.1.24 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
