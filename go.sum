@@ -16,6 +16,7 @@ github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/caarlos0/svu v1.12.0 h1:p0iOO19zBnXaR1X7CaYTnpKuKQZnnTCIiHJ5ibVYVFM=
 github.com/caarlos0/svu v1.12.0/go.mod h1:oyja+p/n0CJaeoQ5DtPLAvYkQof8JRtf13ZxobkOGl8=
+github.com/caarlos0/svu/v3 v3.4.0/go.mod h1:mI//T18y9bma8puRKBF5k/rFCm0gLPszQBBUJSCNj3Q=
 github.com/cespare/reflex v0.3.2 h1:SBN/trM94Ifs/ozz77cR3KxKm4dNE22zfG+0+54y5bQ=
 github.com/cespare/reflex v0.3.2/go.mod h1:3hfHPnuDWHtNWk0aLKwwP6pomRkS3r2nM127108jY/4=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
