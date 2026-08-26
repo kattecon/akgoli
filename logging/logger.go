@@ -63,9 +63,11 @@ func (c *SimpleLoggerConfigImpl) SetDevStyleLogging(v bool) {
 // counter has already been registered in that Metrics instance. Call
 // NewLogger only once per Metrics registry.
 //
-// On success the logger emits one debug-level "Logger initialized" entry
-// (visible only when debug logging is enabled) and increments the debug
-// counter. Stack traces are disabled for all log levels. The function returns
+// When debug logging is enabled, the logger emits one "Logger initialized"
+// entry on success and increments the debug counter. When debug logging is
+// off, no entry is emitted and the debug counter stays at zero.
+// Stack traces are disabled for all log levels. Both modes write to stderr.
+// The function returns
 // an error only when Zap's own configuration build fails.
 func NewLogger(cfg LoggerConfig, m *metrics.Metrics) (*zap.Logger, error) {
 	logEventsCounter := prometheus.NewCounterVec(

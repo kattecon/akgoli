@@ -88,8 +88,8 @@ func (svc *TimeSvcMockImpl) WaitForSleepers(count int) {
 
 // Now returns the current mock time.
 //
-// The returned time does not advance automatically. It only changes when
-// Add or AdvanceToNextSleepEvent is called.
+// The returned time does not advance automatically. It changes through Add,
+// AdvanceToNextSleepEvent, or a direct assignment to the Time field.
 // This method is safe for concurrent use.
 func (svc *TimeSvcMockImpl) Now() time.Time {
 	svc.mu.Lock()
@@ -152,10 +152,11 @@ func (svc *TimeSvcMockImpl) releaseReadySleepers() {
 // until that time is reached via Add() or AdvanceToNextSleepEvent().
 // Multiple goroutines can call Sleep concurrently.
 func (svc *TimeSvcMockImpl) Sleep(d time.Duration) {
-	// Buffer of 1 lets the sleeper proceed past the doneChan send without
-	// waiting for releaseReadySleepers to receive. The subsequent Gosched
-	// yield gives the releaser a chance to observe the send.
+	// releaseChan: buffered so releaseReadySleepers can send the wake-up
+	// signal without blocking if the sleeper has not entered the receive yet.
 	releaseChan := make(chan any, 1)
+	// doneChan: buffered so the sleeper can send the acknowledgment and
+	// proceed to Gosched without waiting for releaseReadySleepers to receive.
 	doneChan := make(chan any, 1)
 
 	// Lock scoped to the anonymous function so it releases before blocking on

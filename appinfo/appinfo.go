@@ -1,10 +1,11 @@
-// Package appinfo exposes application identity and version metadata. The
+// Package appinfo exposes application identifier and version metadata. The
 // version and idName variables are populated at build time through Go linker
 // flags. When they are not set, the corresponding methods return "unknown".
 //
 // Build example:
 //
-//	go build -ldflags="-X 'github.com/kattecon/akgoli/appinfo.version=1.0.0' -X 'github.com/kattecon/akgoli/appinfo.idName=myapp'"
+//	go build -ldflags="-X 'github.com/kattecon/akgoli/appinfo.version=1.0.0' \
+//	  -X 'github.com/kattecon/akgoli/appinfo.idName=myapp'"
 package appinfo
 
 import (
@@ -12,8 +13,11 @@ import (
 	"strings"
 )
 
-// AppInfo provides read-only access to the application name, version, and
-// Go runtime version. Use Get for production values and Mock for tests.
+// AppInfo provides read-only access to the application identifier, version,
+// and Go runtime version. Use Get for production values and Mock for tests.
+// The identifier is used by the metrics package as a metric-name prefix, so
+// it should be a stable, short, lowercase string suitable for Prometheus
+// metric names (for example, "myapp").
 type AppInfo interface {
 	// AppIdName returns the application identifier set at build time, or
 	// "unknown" if the linker flag was not provided.

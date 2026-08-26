@@ -8,7 +8,7 @@ private projects.
 | Package | Description |
 |---|---|
 | `absos` | Interfaces for DNS lookups and the system clock, with mock implementations for tests. |
-| `appinfo` | Application name, version, and Go version metadata injected at build time via linker flags. |
+| `appinfo` | Application name and version injected at build time via linker flags. Go version from runtime. |
 | `logging` | Zap logger factory with Prometheus log-event counters by level. |
 | `metrics` | Private Prometheus registry wrapper with application-aware metric naming. |
 | `sbox` | Authenticated encryption (NaCl secretbox) for small JSON-serializable payloads. |
@@ -32,7 +32,7 @@ import (
     "github.com/kattecon/akgoli/sbox"
 )
 
-svc := sbox.NewSBoxSvc()
+svc := sbox.NewSBoxSvc() // each call creates a new random key
 encrypted, err := svc.Encode(map[string]any{"user": "alice"})
 if err != nil {
     log.Fatal(err)

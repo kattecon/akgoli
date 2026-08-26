@@ -1,5 +1,4 @@
-// Package typesafe provides generic wrappers around standard-library
-// concurrent data structures.
+// Package typesafe provides a generic type-safe wrapper around sync.Map.
 package typesafe
 
 import "sync"

@@ -1,6 +1,7 @@
 // Package metrics provides a private Prometheus registry with application-aware
-// metric naming. All metric names are prefixed with the application's ID name
-// from appinfo via the Prefixed method.
+// metric naming. Callers use the Prefixed method to build metric names with the
+// application identifier (from AppInfo.AppIdName) as a prefix. Standard Go and process collectors
+// registered by NewMetrics keep their original unprefixed names.
 package metrics
 
 import (
@@ -18,7 +19,7 @@ import (
 // Metrics wraps a private Prometheus registry. Using a private registry
 // instead of the global default avoids collisions with other libraries and
 // gives full control over which collectors are registered. Create instances
-// with NewMetrics or NewMetricsWithoutDefaultCollectors; the zero value is
+// with NewMetrics or NewMetricsWithoutDefaultCollectors. The zero value is
 // not usable.
 type Metrics struct {
 	reg     *prometheus.Registry
@@ -27,8 +28,10 @@ type Metrics struct {
 
 // NewMetricsWithoutDefaultCollectors creates a Metrics with an empty registry.
 // No Go runtime or process collectors are registered. Use this in tests to
-// avoid process-collector noise. The first call to Handler on the returned
-// Metrics still registers promhttp handler-instrumentation metrics.
+// avoid process-collector noise. The appInfo parameter must be non-nil
+// because Prefixed uses it to build metric names. The first call to Handler
+// on the returned Metrics still registers promhttp handler-instrumentation
+// metrics.
 func NewMetricsWithoutDefaultCollectors(appInfo appinfo.AppInfo) *Metrics {
 	return &Metrics{
 		reg:     prometheus.NewRegistry(),
@@ -90,8 +93,8 @@ func (m *Metrics) Handler() http.Handler {
 		m.reg,
 		promhttp.HandlerFor(m.reg, promhttp.HandlerOpts{
 			Registry: m.reg,
-			// Keep scrape output byte-identical across requests to simplify
-			// debugging and test assertions.
+			// Keep responses uncompressed for easier inspection and test
+			// body handling.
 			DisableCompression: true,
 			// Limit concurrent scrapes to protect memory under load.
 			MaxRequestsInFlight: 10,

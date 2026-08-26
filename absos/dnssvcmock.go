@@ -25,8 +25,9 @@ type DnsMockResult struct {
 
 // DnsSvcMockImpl is a mock implementation of DnsSvc for testing. It returns
 // pre-configured results for each hostname and can simulate lookup delays
-// through a TimeSvc. Create instances with NewDnsSvcMock; the zero value is
-// not usable. All methods are safe for concurrent use. However, the returned
+// through a TimeSvc. Create instances with NewDnsSvcMock. The zero value
+// is not usable. All methods are safe for concurrent use, provided the injected
+// TimeSvc is also safe for concurrent calls. However, the returned
 // IP slices share the backing array with the registered data (see
 // DnsMockResult.IPs), so concurrent mutation of those slices is not safe.
 type DnsSvcMockImpl struct {

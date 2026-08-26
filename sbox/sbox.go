@@ -9,14 +9,14 @@
 //   - Automatic cryptographically secure key generation.
 //   - Random nonce from crypto/rand for each encryption operation (collision is negligible with 192 random bits).
 //   - JSON serialization/deserialization of JSON-serializable Go values.
-//   - URL-safe base64 encoding for easy transport.
+//   - URL-safe base64 encoding, safe for use in URLs, HTTP headers, and JSON strings.
 //   - Protection against tampering.
 //
 // Security properties:
 //   - Confidentiality: Data is encrypted and cannot be read without the key. Key is never exposed.
 //   - Authenticity: Tampering with encrypted data will be detected during decryption.
 //   - Semantic security: Identical plaintexts produce different ciphertexts.
-//   - Per-instance key isolation: Each service instance uses a unique ephemeral key.
+//   - Per-instance key isolation: Each service instance generates its own random ephemeral key.
 //
 // Example usage:
 //
@@ -46,9 +46,10 @@
 // SBoxSvc instances are safe for concurrent use by multiple goroutines after creation.
 //
 // Limitations:
-//   - Designed for small payloads. The entire message is held in memory as
-//     JSON, ciphertext, and Base64 simultaneously. No size limit is enforced.
-//   - Each service instance has a unique key. Data encrypted by one instance
+//   - Designed for small payloads (the secretbox docs suggest 16 KB when unsure).
+//     The entire message is held in memory as JSON, ciphertext, and Base64
+//     simultaneously. No size limit is enforced.
+//   - Each service instance has its own random key. Data encrypted by one instance
 //     cannot be decrypted by another instance.
 //   - Keys are ephemeral and not persisted. A service restart loses all keys.
 package sbox
@@ -102,8 +103,8 @@ type SBoxSvc interface {
 	//   - The encrypted JSON representation of the value.
 	//   - An authentication tag to prevent tampering.
 	//
-	// Each call to Encode with the same value produces a different result due to
-	// the random nonce, providing semantic security.
+	// Each call to Encode uses a fresh random nonce, so repeated calls with the
+	// same value produce different ciphertexts (nonce collision is negligible).
 	//
 	// Returns an error if JSON serialization fails. Panics if crypto/rand
 	// fails to provide nonce material.
@@ -129,7 +130,7 @@ type SBoxSvc interface {
 }
 
 // sboxSvcImpl implements the SBoxSvc interface using NaCl secretbox for encryption.
-// Each instance maintains its own unique secret key that is generated during construction.
+// Each instance maintains its own randomly generated secret key.
 type sboxSvcImpl struct {
 	// secretKey is the 32-byte key used for encryption/decryption.
 	// This key is generated once during construction and never changes.
@@ -138,7 +139,7 @@ type sboxSvcImpl struct {
 
 // NewSBoxSvc creates a new SBoxSvc instance with a randomly generated encryption key.
 //
-// Each instance has its own unique key, so data encrypted by one instance cannot
+// Each instance has its own random key, so data encrypted by one instance cannot
 // be decrypted by another instance. This provides strong isolation between services.
 //
 // The function panics if the system's cryptographic random number generator fails,
@@ -158,13 +159,13 @@ func NewSBoxSvc() SBoxSvc {
 
 // Encode encrypts the given value and returns it as a URL-safe base64 encoded string.
 //
-// The same value encrypted multiple times will produce different results due to
-// the random nonce, providing semantic security against pattern analysis.
+// Each encryption uses a fresh random nonce, so repeated calls with the same
+// value produce different ciphertexts (nonce collision is negligible).
 //
 // Security guarantees:
 //   - Confidentiality: The original data cannot be recovered without the key.
 //   - Authenticity: Any tampering with the result will be detected during decryption.
-//   - Freshness: Each encryption uses a unique nonce.
+//   - Freshness: Each encryption uses a random nonce.
 //
 // Parameters:
 //   - value: Any Go value that can be JSON-marshaled.
@@ -183,7 +184,7 @@ func (sb *sboxSvcImpl) Encode(value any) (string, error) {
 	}
 
 	// Generate a cryptographically secure random nonce.
-	// Each encryption operation must use a unique nonce for security.
+	// A fresh random nonce is generated for each encryption operation.
 	var nonce [nonceSize]byte
 	nr, err := rand.Read(nonce[:])
 	if nr != nonceSize || err != nil {
@@ -218,6 +219,8 @@ func (sb *sboxSvcImpl) Encode(value any) (string, error) {
 //   - ErrFailedToDecrypt if authentication fails (wrong key, corruption, or tampering).
 //   - Base64 decoding errors for malformed input.
 //   - JSON unmarshaling errors if the decrypted data doesn't match the target type.
+//     On a type-mismatch error, value may be partially populated. Callers should
+//     not read value after an error.
 //
 // Example:
 //

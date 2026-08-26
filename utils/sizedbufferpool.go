@@ -9,15 +9,18 @@ import (
 // and returns the buffer to the pool via the existing get and put helpers.
 
 // SizedBufferPool implements a pool of bytes.Buffers in the form of a bounded
-// channel. Buffers are created lazily with the requested alloc capacity.
+// channel. Buffers are created lazily with the configured capacity.
 //
 // The size parameter bounds only the number of idle buffers retained in the
 // channel. When a caller requests a buffer and the channel is empty, a new
 // buffer is allocated immediately without waiting. The total number of live
 // buffers across concurrent callers is therefore not bounded by size.
 //
-// After each use, any buffer whose capacity exceeds alloc is discarded and
-// replaced with a fresh buffer of exactly alloc capacity.
+// After each use, any buffer whose capacity exceeds the configured value is
+// discarded and replaced with a fresh buffer of exactly that capacity.
+//
+// Concurrent WithBuffer calls are safe. Create instances with
+// NewSizedBufferPool. The zero value works but retains no buffers.
 type SizedBufferPool struct {
 	c chan *bytes.Buffer
 	a int
@@ -27,11 +30,12 @@ type SizedBufferPool struct {
 // size defines the number of buffers to be retained in the pool and alloc sets
 // the initial capacity of new buffers to minimize calls to make().
 //
-// The value of alloc should seek to provide a buffer that is representative of
-// most data written to the buffer (i.e. 95th percentile) without being
-// overly large (which will increase static memory consumption). You may wish to
-// track the capacity of your last N buffers (i.e. using an []int) prior to
-// returning them to the pool as input into calculating a suitable alloc value.
+// The alloc value should cover most data written to the buffer (for example, the
+// 95th percentile) without being so large that idle buffers waste memory.
+// Each idle buffer retains roughly alloc bytes, and the pool keeps up to size
+// of them. You may wish to track the capacity of your last N buffers (for
+// example, using an []int) before returning them to the pool as input into
+// choosing a suitable alloc value.
 //
 // Both size and alloc must be non-negative. A negative size panics during
 // construction. A negative alloc panics on the first cache miss when a new
@@ -60,9 +64,9 @@ func (bp *SizedBufferPool) WithBuffer(f func(b *bytes.Buffer)) {
 func (bp *SizedBufferPool) get() (b *bytes.Buffer) {
 	select {
 	case b = <-bp.c:
-	// reuse existing buffer.
+		// Idle buffer from the channel. Already reset by put.
 	default:
-		// create new buffer.
+		// Channel empty. Allocate immediately rather than blocking.
 		b = bytes.NewBuffer(make([]byte, 0, bp.a))
 	}
 	return

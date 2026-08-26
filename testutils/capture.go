@@ -29,7 +29,7 @@ func CapturePanicValue(f func()) (recovered any) {
 // is drained only after f returns. If f panics, os.Stderr is restored but no
 // captured output is returned.
 func CaptureStderrNoDoubleQuotes(f func()) string {
-	r, w, _ := os.Pipe() // Pipe failure is catastrophic (fd exhaustion); nil w panics on next write.
+	r, w, _ := os.Pipe() //nolint:errcheck // Pipe failure (fd exhaustion) is not handled in test utilities.
 
 	old := os.Stderr
 	os.Stderr = w
@@ -57,7 +57,7 @@ func CaptureStderrNoDoubleQuotes(f func()) string {
 // is drained only after f returns. If f panics, os.Stdout is restored but no
 // captured output is returned.
 func CaptureStdoutNoDoubleQuotes(f func()) string {
-	r, w, _ := os.Pipe() // Pipe failure is catastrophic (fd exhaustion); nil w panics on next write.
+	r, w, _ := os.Pipe() //nolint:errcheck // Pipe failure (fd exhaustion) is not handled in test utilities.
 
 	old := os.Stdout
 	os.Stdout = w
