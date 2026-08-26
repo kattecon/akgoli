@@ -18,6 +18,8 @@ private projects.
 
 ## Installation
 
+The minimum Go version is declared in `go.mod`.
+
 ```sh
 go get github.com/kattecon/akgoli
 ```
@@ -25,7 +27,10 @@ go get github.com/kattecon/akgoli
 ## Usage
 
 ```go
-import "github.com/kattecon/akgoli/sbox"
+import (
+    "log"
+    "github.com/kattecon/akgoli/sbox"
+)
 
 svc := sbox.NewSBoxSvc()
 encrypted, err := svc.Encode(map[string]any{"user": "alice"})
@@ -41,7 +46,11 @@ if err := svc.Decode(encrypted, &result); err != nil {
 // result["user"] == "alice"
 ```
 
-See each package's Go doc comments for the full API.
+See each package's Go doc comments for the full API, for example:
+
+```sh
+go doc github.com/kattecon/akgoli/sbox
+```
 
 ## Testing
 

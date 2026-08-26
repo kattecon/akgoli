@@ -4,21 +4,21 @@
 // with automatic key and nonce management. It's designed for encrypting small data structures
 // that can be JSON-serialized, such as session tokens, API keys, or configuration data.
 //
-// Key Features:
+// Key features:
 //   - Authenticated encryption using XSalsa20-Poly1305 (via NaCl secretbox).
 //   - Automatic cryptographically secure key generation.
-//   - Unique random nonce for each encryption operation.
-//   - JSON serialization/deserialization of arbitrary Go values.
+//   - Random nonce from crypto/rand for each encryption operation (collision is negligible with 192 random bits).
+//   - JSON serialization/deserialization of JSON-serializable Go values.
 //   - URL-safe base64 encoding for easy transport.
 //   - Protection against tampering.
 //
-// Security Properties:
+// Security properties:
 //   - Confidentiality: Data is encrypted and cannot be read without the key. Key is never exposed.
 //   - Authenticity: Tampering with encrypted data will be detected during decryption.
 //   - Semantic security: Identical plaintexts produce different ciphertexts.
 //   - Per-instance key isolation: Each service instance uses a unique ephemeral key.
 //
-// Example Usage:
+// Example usage:
 //
 //	// Create a new encryption service.
 //	svc := sbox.NewSBoxSvc()
@@ -42,14 +42,15 @@
 //		log.Fatal(err)
 //	}
 //
-// Thread Safety:
+// Thread safety:
 // SBoxSvc instances are safe for concurrent use by multiple goroutines after creation.
 //
 // Limitations:
-//   - Designed for small payloads (typically < 1MB due to JSON overhead).
-//   - Each service instance has a unique key - data encrypted by one instance
+//   - Designed for small payloads. The entire message is held in memory as
+//     JSON, ciphertext, and Base64 simultaneously. No size limit is enforced.
+//   - Each service instance has a unique key. Data encrypted by one instance
 //     cannot be decrypted by another instance.
-//   - Keys are ephemeral and not persisted - service restart loses all keys.
+//   - Keys are ephemeral and not persisted. A service restart loses all keys.
 package sbox
 
 import (

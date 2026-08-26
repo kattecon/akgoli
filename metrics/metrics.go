@@ -17,7 +17,9 @@ import (
 
 // Metrics wraps a private Prometheus registry. Using a private registry
 // instead of the global default avoids collisions with other libraries and
-// gives full control over which collectors are registered.
+// gives full control over which collectors are registered. Create instances
+// with NewMetrics or NewMetricsWithoutDefaultCollectors; the zero value is
+// not usable.
 type Metrics struct {
 	reg     *prometheus.Registry
 	appInfo appinfo.AppInfo
@@ -36,8 +38,9 @@ func NewMetricsWithoutDefaultCollectors(appInfo appinfo.AppInfo) *Metrics {
 
 // NewMetrics creates a Metrics with Go runtime collectors, process collectors,
 // and a startup gauge named <app-id>_startup. The startup gauge records the
-// time of creation as Unix seconds with nanosecond precision, labeled with
-// the application version from appInfo.
+// time of creation as fractional Unix seconds (derived from UnixNano),
+// labeled with the application version from appInfo. Both appInfo and
+// timeSvc must be non-nil.
 func NewMetrics(appInfo appinfo.AppInfo, timeSvc absos.TimeSvc) *Metrics {
 	m := NewMetricsWithoutDefaultCollectors(appInfo)
 

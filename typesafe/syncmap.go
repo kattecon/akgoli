@@ -5,16 +5,24 @@ package typesafe
 import "sync"
 
 // SyncMap is a generic wrapper around sync.Map that provides compile-time
-// type safety. It exposes the same operations as sync.Map but uses typed
-// parameters and return values instead of any.
+// type safety. It exposes a subset of sync.Map operations (Load, Store,
+// Delete, LoadOrStore, LoadAndDelete, Range) with typed parameters and
+// return values, plus LoadOrCompute for lazy initialization on miss.
+// Clear, CompareAndDelete, CompareAndSwap, and Swap are not wrapped.
 //
 // The zero value is ready for use. A SyncMap must not be copied after first
-// use. Like sync.Map, it is optimized for workloads where keys are stable
-// (read-heavy) or where each goroutine accesses a disjoint set of keys. For
-// workloads with frequent writes to shared keys, a mutex-guarded map may
-// perform better.
+// use. Like sync.Map, it is optimized for workloads where each entry is
+// written once and read many times, or where each goroutine accesses a
+// disjoint set of keys. For workloads with frequent writes to shared keys,
+// a mutex-guarded map may perform better.
 //
-// All methods are safe for concurrent use by multiple goroutines.
+// All methods are safe for concurrent use by multiple goroutines. In the
+// terminology of the Go memory model, a write operation synchronizes before
+// any read operation that observes its effect. Load, LoadAndDelete, and
+// LoadOrStore (when loaded is true) are read operations. Store, Delete,
+// LoadAndDelete, and LoadOrStore (when loaded is false) are write operations.
+// LoadOrCompute follows the same rules as its underlying LoadOrStore call.
+// See sync.Map for the full memory model.
 type SyncMap[K comparable, V any] struct {
 	inner sync.Map
 	// noValue holds the zero value of V, returned when a key is not found.
@@ -81,10 +89,12 @@ func (m *SyncMap[K, V]) LoadAndDelete(key K) (value V, loaded bool) {
 	return a.(V), loaded
 }
 
-// Range calls f for each key-value pair in the map. If f returns false, Range
-// stops the iteration. Range does not provide a consistent snapshot of the
-// map. A key may be visited once, skipped, or reflect a concurrent update.
-// Range takes O(N) time even if f returns false after a small number of calls.
+// Range calls f sequentially for each key-value pair in the map. If f returns
+// false, Range stops the iteration. Range does not block other map methods,
+// and f may call any method on the same map without deadlocking. Range does
+// not provide a consistent snapshot of the map. A key may be visited once,
+// skipped, or reflect a concurrent update. Range takes O(N) time even if f
+// returns false after a small number of calls.
 func (m *SyncMap[K, V]) Range(f func(key K, value V) bool) {
 	m.inner.Range(func(key, value any) bool {
 		return f(key.(K), value.(V))

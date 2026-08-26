@@ -11,8 +11,8 @@ func ConstantTimeStringEquals(x, y string) bool {
 		return false
 	}
 
-	// Manual XOR loop instead of subtle.ConstantTimeCompare to avoid the
-	// string-to-[]byte allocation that the stdlib function would require.
+	// String-typed constant-time comparison. subtle.ConstantTimeCompare takes
+	// []byte, so this function avoids the conversion at call sites.
 	//
 	// XOR each byte pair and OR the results into a single accumulator. If any
 	// byte differs, a nonzero bit propagates into v. The loop must visit every

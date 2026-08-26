@@ -9,7 +9,7 @@ import (
 // and returns the buffer to the pool via the existing get and put helpers.
 
 // SizedBufferPool implements a pool of bytes.Buffers in the form of a bounded
-// channel. Buffers are pre-allocated to the requested size.
+// channel. Buffers are created lazily with the requested alloc capacity.
 //
 // The size parameter bounds only the number of idle buffers retained in the
 // channel. When a caller requests a buffer and the channel is empty, a new

@@ -18,14 +18,17 @@ type DnsMockResult struct {
 	Err error
 
 	// Duration is the delay applied before returning the result. A positive
-	// value causes LookupIP to call timeSvc.Sleep before returning. Zero or
-	// negative values mean no delay.
+	// value causes LookupIP to sleep using the TimeSvc passed to
+	// NewDnsSvcMock before returning. Zero or negative values mean no delay.
 	Duration time.Duration
 }
 
 // DnsSvcMockImpl is a mock implementation of DnsSvc for testing. It returns
 // pre-configured results for each hostname and can simulate lookup delays
-// through a TimeSvc.
+// through a TimeSvc. Create instances with NewDnsSvcMock; the zero value is
+// not usable. All methods are safe for concurrent use. However, the returned
+// IP slices share the backing array with the registered data (see
+// DnsMockResult.IPs), so concurrent mutation of those slices is not safe.
 type DnsSvcMockImpl struct {
 	timeSvc TimeSvc
 	mu      sync.RWMutex

@@ -20,12 +20,12 @@ type sleepRequest struct {
 // via AdvanceToNextSleepEvent() or Add(). This enables deterministic testing of time-dependent
 // code without relying on real time delays.
 //
-// Thread Safety: All methods are thread-safe and can be called from multiple goroutines.
+// Thread safety: all methods are thread-safe and can be called from multiple goroutines.
 // However, the exported Time field is not protected by the internal mutex. Use Now
 // to read the current time during concurrent work. Direct reads or writes of Time
 // while another goroutine calls Sleep, Add, or AdvanceToNextSleepEvent cause a data race.
 //
-// Usage Pattern:
+// Usage pattern:
 //  1. Start a goroutine that calls Sleep.
 //  2. Call WaitForSleepers to block until the goroutine has registered.
 //  3. Call Add or AdvanceToNextSleepEvent to advance the clock and release the sleeper.
@@ -56,9 +56,9 @@ func NewTimeSvcMock() *TimeSvcMockImpl {
 
 // SleeperCount returns the current number of registered sleepers.
 //
-// This method is useful for testing to ensure all expected sleepers
-// have registered before proceeding with time advancement.
-// Thread-safe for concurrent access.
+// Use this to verify how many goroutines are blocked in Sleep before
+// advancing time.
+// This method is safe for concurrent use.
 func (svc *TimeSvcMockImpl) SleeperCount() int {
 	svc.mu.Lock()
 	defer svc.mu.Unlock()
@@ -67,12 +67,12 @@ func (svc *TimeSvcMockImpl) SleeperCount() int {
 
 // WaitForSleepers waits until the specified number of sleepers are registered.
 //
-// This method provides deterministic synchronization for tests, ensuring
-// all expected Sleep() calls have registered before advancing time.
+// Blocks until all expected Sleep calls have registered, so the test can
+// safely advance time afterward.
 // There is no timeout. If the requested count is never reached, the call
 // blocks indefinitely. The method polls with a real 1ms time.Sleep between
 // checks.
-// Thread-safe for concurrent access.
+// This method is safe for concurrent use.
 func (svc *TimeSvcMockImpl) WaitForSleepers(count int) {
 	for {
 		svc.mu.Lock()
@@ -88,10 +88,9 @@ func (svc *TimeSvcMockImpl) WaitForSleepers(count int) {
 
 // Now returns the current mock time.
 //
-// This method is part of the TimeSvc interface.
-// This time does not advance automatically - it only changes when Add() or
-// AdvanceToNextSleepEvent() is called.
-// Thread-safe for concurrent access.
+// The returned time does not advance automatically. It only changes when
+// Add or AdvanceToNextSleepEvent is called.
+// This method is safe for concurrent use.
 func (svc *TimeSvcMockImpl) Now() time.Time {
 	svc.mu.Lock()
 	defer svc.mu.Unlock()
@@ -102,7 +101,7 @@ func (svc *TimeSvcMockImpl) Now() time.Time {
 //
 // This method automatically releases all sleepers whose due time has been reached
 // or passed after the time advancement.
-// Thread-safe for concurrent access.
+// This method is safe for concurrent use.
 func (svc *TimeSvcMockImpl) Add(d time.Duration) {
 	// Lock scoped to the anonymous function so it releases before
 	// releaseReadySleepers, which re-acquires it.
@@ -151,7 +150,7 @@ func (svc *TimeSvcMockImpl) releaseReadySleepers() {
 //
 // The method calculates the due time (current time + duration) and blocks
 // until that time is reached via Add() or AdvanceToNextSleepEvent().
-// Thread-safe: Multiple goroutines can call Sleep() concurrently.
+// Multiple goroutines can call Sleep concurrently.
 func (svc *TimeSvcMockImpl) Sleep(d time.Duration) {
 	// Buffer of 1 lets the sleeper proceed past the doneChan send without
 	// waiting for releaseReadySleepers to receive. The subsequent Gosched
@@ -194,7 +193,7 @@ func (svc *TimeSvcMockImpl) Sleep(d time.Duration) {
 // been reached.
 //
 // Returns 0 if no sleepers are present, otherwise returns the duration advanced.
-// Thread-safe for concurrent access.
+// This method is safe for concurrent use.
 func (svc *TimeSvcMockImpl) AdvanceToNextSleepEvent() time.Duration {
 	var currentTime time.Time
 	var minDueTime time.Time

@@ -5,7 +5,7 @@
 package utils
 
 // ConstError is a string type that implements the error interface. Because
-// strings are constants in Go, a ConstError value can be declared as a
+// its underlying type is string, a ConstError value can be declared as a
 // package-level const and used as a sentinel error with == and errors.Is.
 type ConstError string
 

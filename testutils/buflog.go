@@ -10,6 +10,7 @@ import (
 
 // BufferingLogger holds a Zap logger that writes JSON log entries into an
 // in-memory buffer. It is intended for tests that need to assert on log output.
+// Create instances with NewBufferingLogger; the zero value is not usable.
 //
 // The underlying buffer is not protected by a mutex, so the logger and buffer
 // must be used from a single goroutine at a time. Do not log concurrently or
