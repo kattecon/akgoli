@@ -1,5 +1,7 @@
 package utils
 
+// indexOfRunePos returns the byte index of the pos-th rune in s. If pos
+// exceeds the rune count, it returns len(s).
 func indexOfRunePos(s string, pos int) int {
 	for idx := range s {
 		if pos == 0 {
@@ -10,10 +12,17 @@ func indexOfRunePos(s string, pos int) int {
 	return len(s)
 }
 
+// TakeRunes returns the first n runes of s as a string. If n is greater than
+// the number of runes in s, it returns s unchanged. This function operates on
+// rune boundaries, so it never splits a multi-byte UTF-8 character.
 func TakeRunes(s string, n int) string {
 	return s[:indexOfRunePos(s, n)]
 }
 
+// DropRunes returns s with the first n runes removed. If n is greater than
+// the number of runes in s, it returns an empty string. This function
+// operates on rune boundaries, so it never splits a multi-byte UTF-8
+// character.
 func DropRunes(s string, n int) string {
 	return s[indexOfRunePos(s, n):]
 }

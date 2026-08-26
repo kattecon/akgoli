@@ -6,22 +6,36 @@ import (
 	"time"
 )
 
-// DnsMockResult represents the mock data for a DNS lookup response.
+// DnsMockResult holds the data returned by a mock DNS lookup.
 type DnsMockResult struct {
-	IPs      []net.IP
-	Err      error
+	// IPs is the list of addresses returned by LookupIP. The mock stores and
+	// returns this slice without copying, so the caller and the mock share
+	// the same backing array. Mutating the slice after registration changes
+	// future lookup results.
+	IPs []net.IP
+
+	// Err is the error returned by LookupIP alongside IPs.
+	Err error
+
+	// Duration is the delay applied before returning the result. A positive
+	// value causes LookupIP to call timeSvc.Sleep before returning. Zero or
+	// negative values mean no delay.
 	Duration time.Duration
 }
 
-// DnsSvcMockImpl provides a mock implementation of DnsSvc for testing purposes.
-// It allows controlled DNS responses and can simulate delays using TimeSvc.
+// DnsSvcMockImpl is a mock implementation of DnsSvc for testing. It returns
+// pre-configured results for each hostname and can simulate lookup delays
+// through a TimeSvc.
 type DnsSvcMockImpl struct {
 	timeSvc TimeSvc
 	mu      sync.RWMutex
 	results map[string]DnsMockResult
 }
 
-// NewDnsSvcMock creates a new DnsSvcMockImpl instance with the provided TimeSvc.
+// NewDnsSvcMock creates a new DnsSvcMockImpl. The timeSvc parameter is used
+// to simulate delays for results that have a positive Duration. Pass nil if
+// no delay simulation is needed. If timeSvc is nil and a result with a
+// positive Duration is looked up, the call panics.
 func NewDnsSvcMock(timeSvc TimeSvc) *DnsSvcMockImpl {
 	return &DnsSvcMockImpl{
 		timeSvc: timeSvc,
@@ -29,15 +43,18 @@ func NewDnsSvcMock(timeSvc TimeSvc) *DnsSvcMockImpl {
 	}
 }
 
-// LookupIP performs a mock DNS lookup using predefined results.
-// If a duration is set for the hostname, it will sleep using TimeSvc before returning.
+// LookupIP returns the pre-configured result for host. If no result has been
+// registered for host, it returns nil and a *net.DNSError with IsNotFound set
+// to true.
+//
+// The returned IP slice is the same slice that was passed to
+// SetLookupIpResult or SetLookupIpResultWithDuration. No copy is made.
 func (svc *DnsSvcMockImpl) LookupIP(host string) ([]net.IP, error) {
 	svc.mu.RLock()
 	result, exists := svc.results[host]
 	svc.mu.RUnlock()
 
 	if !exists {
-		// Return default error for unknown hosts.
 		return nil, &net.DNSError{
 			Err:        "no such host",
 			Name:       host,
@@ -46,7 +63,6 @@ func (svc *DnsSvcMockImpl) LookupIP(host string) ([]net.IP, error) {
 		}
 	}
 
-	// Simulate delay if duration is set.
 	if result.Duration > 0 {
 		svc.timeSvc.Sleep(result.Duration)
 	}
@@ -54,12 +70,16 @@ func (svc *DnsSvcMockImpl) LookupIP(host string) ([]net.IP, error) {
 	return result.IPs, result.Err
 }
 
-// SetLookupIpResult sets the mock result for a specific hostname.
+// SetLookupIpResult registers a mock result for host with no delay. The ips
+// slice is stored without copying.
 func (svc *DnsSvcMockImpl) SetLookupIpResult(host string, ips []net.IP, err error) {
 	svc.SetLookupIpResultWithDuration(host, ips, err, 0)
 }
 
-// SetLookupIpResultWithDuration sets the mock result for a specific hostname with a delay duration.
+// SetLookupIpResultWithDuration registers a mock result for host with an
+// optional delay. The ips slice is stored without copying. A positive
+// duration causes LookupIP to call timeSvc.Sleep before returning, so
+// timeSvc must not be nil.
 func (svc *DnsSvcMockImpl) SetLookupIpResultWithDuration(host string, ips []net.IP, err error, duration time.Duration) {
 	svc.mu.Lock()
 	defer svc.mu.Unlock()
@@ -70,14 +90,16 @@ func (svc *DnsSvcMockImpl) SetLookupIpResultWithDuration(host string, ips []net.
 	}
 }
 
-// ClearLookupIpResult removes the mock result for a specific hostname.
+// ClearLookupIpResult removes the registered result for host. Subsequent
+// lookups for this host return the default not-found error.
 func (svc *DnsSvcMockImpl) ClearLookupIpResult(host string) {
 	svc.mu.Lock()
 	defer svc.mu.Unlock()
 	delete(svc.results, host)
 }
 
-// ClearAllLookupIpResults removes all mock results.
+// ClearAllLookupIpResults removes all registered results. Subsequent lookups
+// for any host return the default not-found error.
 func (svc *DnsSvcMockImpl) ClearAllLookupIpResults() {
 	svc.mu.Lock()
 	defer svc.mu.Unlock()

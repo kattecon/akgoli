@@ -4,6 +4,9 @@ type mockImpl struct{}
 
 var mock mockImpl = mockImpl{}
 
+// Mock returns an AppInfo with fixed values for tests: AppIdName returns
+// "mock", AppVersion returns "1.2.3", and GoVersion returns "100.500". These
+// values do not change between calls or test runs.
 func Mock() AppInfo {
 	return mock
 }

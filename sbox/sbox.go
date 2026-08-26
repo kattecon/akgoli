@@ -5,18 +5,18 @@
 // that can be JSON-serialized, such as session tokens, API keys, or configuration data.
 //
 // Key Features:
-//   - Authenticated encryption using ChaCha20-Poly1305 (via NaCl secretbox).
+//   - Authenticated encryption using XSalsa20-Poly1305 (via NaCl secretbox).
 //   - Automatic cryptographically secure key generation.
 //   - Unique random nonce for each encryption operation.
 //   - JSON serialization/deserialization of arbitrary Go values.
 //   - URL-safe base64 encoding for easy transport.
-//   - Protection against tampering and replay attacks.
+//   - Protection against tampering.
 //
 // Security Properties:
 //   - Confidentiality: Data is encrypted and cannot be read without the key. Key is never exposed.
 //   - Authenticity: Tampering with encrypted data will be detected during decryption.
 //   - Semantic security: Identical plaintexts produce different ciphertexts.
-//   - Forward secrecy: Each service instance uses a unique ephemeral key.
+//   - Per-instance key isolation: Each service instance uses a unique ephemeral key.
 //
 // Example Usage:
 //
@@ -64,7 +64,7 @@ import (
 
 const (
 	// secretKeySize is the size in bytes of the secret key used for encryption.
-	// This matches the key size required by NaCl secretbox (32 bytes for ChaCha20).
+	// This matches the key size required by NaCl secretbox (32 bytes for XSalsa20).
 	secretKeySize = 32
 
 	// nonceSize is the size in bytes of the nonce used for encryption.
@@ -81,6 +81,7 @@ const (
 )
 
 // SBoxSvc provides authenticated encryption services for small data payloads.
+// Use NewSBoxSvcMock for a deterministic test replacement.
 //
 // Each instance maintains its own ephemeral encryption key and can only decrypt
 // data that it previously encrypted. This provides strong isolation between
@@ -103,8 +104,8 @@ type SBoxSvc interface {
 	// Each call to Encode with the same value produces a different result due to
 	// the random nonce, providing semantic security.
 	//
-	// Returns an error if JSON serialization fails or if the cryptographic
-	// random number generator fails (which would indicate a serious system problem).
+	// Returns an error if JSON serialization fails. Panics if crypto/rand
+	// fails to provide nonce material.
 	Encode(value any) (string, error)
 
 	// Decode decrypts and decodes an encrypted string back into the provided value.
@@ -117,6 +118,8 @@ type SBoxSvc interface {
 	//   - ErrFailedToDecrypt if authentication fails or data is corrupted.
 	//   - base64 decoding errors for malformed input.
 	//   - JSON unmarshaling errors if the decrypted data doesn't match the target type.
+	//     On a type-mismatch error, value may be partially populated. Callers should
+	//     not read value after an error.
 	//
 	// Example:
 	//   var result MyStruct
@@ -186,7 +189,7 @@ func (sb *sboxSvcImpl) Encode(value any) (string, error) {
 		panic(err)
 	}
 
-	// Encrypt the data using NaCl secretbox (ChaCha20-Poly1305).
+	// Encrypt the data using NaCl secretbox (XSalsa20-Poly1305).
 	// The nonce is prepended to the encrypted data for later extraction during decryption.
 	encrypted := secretbox.Seal(nonce[:], data, &nonce, &sb.secretKey)
 
@@ -235,7 +238,7 @@ func (sb *sboxSvcImpl) Decode(encoded string, value any) error {
 	}
 	decoded := decodeBytes[:decodedSize]
 
-	// Extract the nonce from the first 24 bytes.
+	// Extract the nonce from the front. Encode prepends it to the ciphertext.
 	var decryptNonce [nonceSize]byte
 	copy(decryptNonce[:], decoded[:nonceSize])
 

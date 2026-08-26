@@ -1,3 +1,5 @@
+// Package logging provides a Zap logger factory that connects log events to
+// Prometheus metrics. NewLogger is the main entry point.
 package logging
 
 import (
@@ -8,20 +10,29 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// LoggerConfig controls the output format and verbosity of a logger created
+// by NewLogger. The settings are read once during logger construction. Changing
+// them afterward does not affect loggers that have already been built.
 type LoggerConfig interface {
-	// Whether to output debugging log messages or not.
+	// IsDebugLogging reports whether the logger should emit debug-level
+	// messages. When false, the logger starts at info level.
 	IsDebugLogging() bool
 
-	// Outputs json formatted log messes if true. Otherwise outputs human readable ones.
+	// IsDevStyleLogging reports whether the logger should use Zap's
+	// human-readable development format. When false, the logger uses Zap's
+	// JSON production format.
 	IsDevStyleLogging() bool
 }
 
+// SimpleLoggerConfigImpl is a mutable LoggerConfig with setter methods.
+// Both fields default to false, which selects info-level JSON output.
 type SimpleLoggerConfigImpl struct {
 	debugLogging    bool
 	devStyleLogging bool
 }
 
-// This one is mainly for unit tests... usually there is a config instance based upon environment variables, some other logic..
+// NewSimpleLoggerConfig creates a SimpleLoggerConfigImpl with both settings
+// set to false (info-level JSON output).
 func NewSimpleLoggerConfig() *SimpleLoggerConfigImpl {
 	return &SimpleLoggerConfigImpl{}
 }
@@ -30,6 +41,7 @@ func (c *SimpleLoggerConfigImpl) IsDebugLogging() bool {
 	return c.debugLogging
 }
 
+// SetDebugLogging controls whether the logger emits debug-level messages.
 func (c *SimpleLoggerConfigImpl) SetDebugLogging(v bool) {
 	c.debugLogging = v
 }
@@ -38,12 +50,24 @@ func (c *SimpleLoggerConfigImpl) IsDevStyleLogging() bool {
 	return c.devStyleLogging
 }
 
+// SetDevStyleLogging controls whether the logger uses human-readable development format.
 func (c *SimpleLoggerConfigImpl) SetDevStyleLogging(v bool) {
 	c.devStyleLogging = v
 }
 
+// NewLogger creates a Zap logger and registers a Prometheus counter named
+// <app-id>_log_events that counts log entries by level. Both cfg and m must
+// be non-nil.
+//
+// The counter is registered with m.MustRegister, which panics if the same
+// counter has already been registered in that Metrics instance. Call
+// NewLogger only once per Metrics registry.
+//
+// On success the logger emits one debug-level "Logger initialized" entry
+// (visible only when debug logging is enabled) and increments the debug
+// counter. Stack traces are disabled for all log levels. The function returns
+// an error only when Zap's own configuration build fails.
 func NewLogger(cfg LoggerConfig, m *metrics.Metrics) (*zap.Logger, error) {
-	// Counter for log events
 	logEventsCounter := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: m.Prefixed("log_events"),
@@ -53,8 +77,9 @@ func NewLogger(cfg LoggerConfig, m *metrics.Metrics) (*zap.Logger, error) {
 	)
 	m.MustRegister(logEventsCounter)
 
-	// Set initial counter to zero for each log level.
-	// (grafana/prometheus might otherwise have problems doing math and distinguishing between missing/zero values...)
+	// Pre-initialize every level series to zero. Prometheus and Grafana treat
+	// a missing series differently from a zero-valued one, so PromQL rate()
+	// and increase() return correct results from the start.
 	logEventsCounter.WithLabelValues(zap.DebugLevel.String()).Add(0)
 	logEventsCounter.WithLabelValues(zap.InfoLevel.String()).Add(0)
 	logEventsCounter.WithLabelValues(zap.WarnLevel.String()).Add(0)
@@ -63,8 +88,6 @@ func NewLogger(cfg LoggerConfig, m *metrics.Metrics) (*zap.Logger, error) {
 	logEventsCounter.WithLabelValues(zap.PanicLevel.String()).Add(0)
 	logEventsCounter.WithLabelValues(zap.FatalLevel.String()).Add(0)
 
-	// Logger itself...
-
 	var zapConfig zap.Config
 	if cfg.IsDevStyleLogging() {
 		zapConfig = zap.NewDevelopmentConfig()
@@ -72,6 +95,7 @@ func NewLogger(cfg LoggerConfig, m *metrics.Metrics) (*zap.Logger, error) {
 		zapConfig = zap.NewProductionConfig()
 	}
 
+	// Stack traces add noise to structured logs in this library's use cases.
 	zapConfig.DisableStacktrace = true
 
 	if cfg.IsDebugLogging() {

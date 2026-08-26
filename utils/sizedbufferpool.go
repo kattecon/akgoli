@@ -4,25 +4,38 @@ import (
 	"bytes"
 )
 
-// Modified version of this file https://github.com/oxtoacart/bpool/blob/master/sizedbufferpool.go
-// (added With method that reuses add and put methods)
+// Based on https://github.com/oxtoacart/bpool/blob/master/sizedbufferpool.go
+// with the addition of WithBuffer, which borrows a buffer, runs a callback,
+// and returns the buffer to the pool via the existing get and put helpers.
 
 // SizedBufferPool implements a pool of bytes.Buffers in the form of a bounded
 // channel. Buffers are pre-allocated to the requested size.
+//
+// The size parameter bounds only the number of idle buffers retained in the
+// channel. When a caller requests a buffer and the channel is empty, a new
+// buffer is allocated immediately without waiting. The total number of live
+// buffers across concurrent callers is therefore not bounded by size.
+//
+// After each use, any buffer whose capacity exceeds alloc is discarded and
+// replaced with a fresh buffer of exactly alloc capacity.
 type SizedBufferPool struct {
 	c chan *bytes.Buffer
 	a int
 }
 
-// SizedBufferPool creates a new BufferPool bounded to the given size.
+// NewSizedBufferPool creates a new SizedBufferPool bounded to the given size.
 // size defines the number of buffers to be retained in the pool and alloc sets
 // the initial capacity of new buffers to minimize calls to make().
 //
 // The value of alloc should seek to provide a buffer that is representative of
-// most data written to the the buffer (i.e. 95th percentile) without being
+// most data written to the buffer (i.e. 95th percentile) without being
 // overly large (which will increase static memory consumption). You may wish to
 // track the capacity of your last N buffers (i.e. using an []int) prior to
 // returning them to the pool as input into calculating a suitable alloc value.
+//
+// Both size and alloc must be non-negative. A negative size panics during
+// construction. A negative alloc panics on the first cache miss when a new
+// buffer is created.
 func NewSizedBufferPool(size int, alloc int) (bp *SizedBufferPool) {
 	return &SizedBufferPool{
 		c: make(chan *bytes.Buffer, size),
@@ -30,15 +43,19 @@ func NewSizedBufferPool(size int, alloc int) (bp *SizedBufferPool) {
 	}
 }
 
-// Run the given function providing a buffer from the pool.
-// The buffer will be returned to the pool when function f has finished its job.
+// WithBuffer borrows a buffer from the pool, passes it to f, and returns it
+// to the pool when f returns. The buffer is empty at the start of the call.
+// The caller must not retain the buffer pointer or any slice obtained from it
+// (such as b.Bytes()) after f returns. The deferred return runs even during
+// panic unwinding, so another goroutine may receive and overwrite the same
+// storage immediately.
 func (bp *SizedBufferPool) WithBuffer(f func(b *bytes.Buffer)) {
 	b := bp.get()
 	defer bp.put(b)
 	f(b)
 }
 
-// Get gets a Buffer from the SizedBufferPool, or creates a new one if none are
+// get returns a Buffer from the SizedBufferPool, or creates a new one if none are
 // available in the pool. Buffers have a pre-allocated capacity.
 func (bp *SizedBufferPool) get() (b *bytes.Buffer) {
 	select {
@@ -51,7 +68,7 @@ func (bp *SizedBufferPool) get() (b *bytes.Buffer) {
 	return
 }
 
-// Put returns the given Buffer to the SizedBufferPool.
+// put returns the given Buffer to the SizedBufferPool.
 func (bp *SizedBufferPool) put(b *bytes.Buffer) {
 	b.Reset()
 
