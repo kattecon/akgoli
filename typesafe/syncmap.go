@@ -18,9 +18,10 @@ import "sync"
 // All methods are safe for concurrent use by multiple goroutines. In the
 // terminology of the Go memory model, a write operation synchronizes before
 // any read operation that observes its effect. Load, LoadAndDelete, and
-// LoadOrStore (when loaded is true) are read operations. Store, Delete,
-// LoadAndDelete, and LoadOrStore (when loaded is false) are write operations.
-// LoadOrCompute follows the same rules as its underlying LoadOrStore call.
+// LoadOrStore are read operations. Store, Delete, and LoadAndDelete are also
+// write operations. LoadOrStore is also a write operation when loaded is
+// false. On a LoadOrCompute hit, the initial Load is the read operation. On
+// a miss, the underlying LoadOrStore determines the classification.
 // See sync.Map for the full memory model.
 type SyncMap[K comparable, V any] struct {
 	inner sync.Map

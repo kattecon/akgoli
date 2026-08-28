@@ -8,7 +8,7 @@ private projects.
 | Package | Description |
 |---|---|
 | `absos` | Interfaces for DNS lookups and the system clock, with mock implementations for tests. |
-| `appinfo` | Application name and version injected at build time via linker flags. Go version from runtime. |
+| `appinfo` | Application identifier and version injected at build time via linker flags. Go version from runtime. |
 | `logging` | Zap logger factory with Prometheus log-event counters by level. |
 | `metrics` | Private Prometheus registry wrapper with application-aware metric naming. |
 | `sbox` | Authenticated encryption (NaCl secretbox) for small JSON-serializable payloads. |
@@ -21,8 +21,10 @@ private projects.
 The minimum Go version is declared in `go.mod`.
 
 ```sh
-go get github.com/kattecon/akgoli
+go get github.com/kattecon/akgoli/sbox
 ```
+
+Import only the packages you need, for example `github.com/kattecon/akgoli/utils`.
 
 ## Usage
 

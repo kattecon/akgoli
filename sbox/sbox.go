@@ -35,7 +35,7 @@
 //		log.Fatal(err)
 //	}
 //
-//	// Decrypt back to original data.
+//	// Decrypt. Note: JSON decodes numbers as float64 in map[string]any.
 //	var decrypted map[string]any
 //	err = svc.Decode(encrypted, &decrypted)
 //	if err != nil {
@@ -49,6 +49,9 @@
 //   - Designed for small payloads (the secretbox docs suggest 16 KB when unsure).
 //     The entire message is held in memory as JSON, ciphertext, and Base64
 //     simultaneously. No size limit is enforced.
+//   - No replay detection. Decode accepts the same valid ciphertext every time.
+//     Callers that need replay protection must enforce expiry or one-time use
+//     outside SBoxSvc.
 //   - Each service instance has its own random key. Data encrypted by one instance
 //     cannot be decrypted by another instance.
 //   - Keys are ephemeral and not persisted. A service restart loses all keys.

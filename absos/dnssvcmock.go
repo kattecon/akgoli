@@ -54,6 +54,8 @@ func NewDnsSvcMock(timeSvc TimeSvc) *DnsSvcMockImpl {
 // The returned IP slice is the same slice that was passed to
 // SetLookupIpResult or SetLookupIpResultWithDuration. No copy is made.
 func (svc *DnsSvcMockImpl) LookupIP(host string) ([]net.IP, error) {
+	// Snapshot the result and release the lock before the optional sleep.
+	// Holding the read lock during Sleep would block setters and clears.
 	svc.mu.RLock()
 	result, exists := svc.results[host]
 	svc.mu.RUnlock()

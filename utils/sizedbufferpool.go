@@ -33,9 +33,8 @@ type SizedBufferPool struct {
 // The alloc value should cover most data written to the buffer (for example, the
 // 95th percentile) without being so large that idle buffers waste memory.
 // Each idle buffer retains roughly alloc bytes, and the pool keeps up to size
-// of them. You may wish to track the capacity of your last N buffers (for
-// example, using an []int) before returning them to the pool as input into
-// choosing a suitable alloc value.
+// of them. To choose a good alloc value, measure the capacity of recent
+// buffers after use and pick a high percentile from that sample.
 //
 // Both size and alloc must be non-negative. A negative size panics during
 // construction. A negative alloc panics on the first cache miss when a new

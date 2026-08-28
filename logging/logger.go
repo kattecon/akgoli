@@ -20,7 +20,9 @@ type LoggerConfig interface {
 
 	// IsDevStyleLogging reports whether the logger should use Zap's
 	// human-readable development format. When false, the logger uses Zap's
-	// JSON production format.
+	// JSON production format with repeated-entry sampling (first 100, then
+	// every 100th). When true, no sampling is applied and DPanic-level
+	// entries cause a panic.
 	IsDevStyleLogging() bool
 }
 
@@ -55,9 +57,10 @@ func (c *SimpleLoggerConfigImpl) SetDevStyleLogging(v bool) {
 	c.devStyleLogging = v
 }
 
-// NewLogger creates a Zap logger and registers a Prometheus counter named
-// <app-id>_log_events that counts log entries by level. Both cfg and m must
-// be non-nil.
+// NewLogger creates a Zap logger and registers a Prometheus counter that
+// counts log entries by level. The counter name is the application identifier
+// from AppInfo (via m.Prefixed) followed by "_log_events". Both cfg and m
+// must be non-nil.
 //
 // The counter is registered with m.MustRegister, which panics if the same
 // counter has already been registered in that Metrics instance. Call

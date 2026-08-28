@@ -40,7 +40,8 @@ func NewMetricsWithoutDefaultCollectors(appInfo appinfo.AppInfo) *Metrics {
 }
 
 // NewMetrics creates a Metrics with Go runtime collectors, process collectors,
-// and a startup gauge named <app-id>_startup. The startup gauge records the
+// and a startup gauge. The gauge name is the application identifier from
+// appInfo (via Prefixed) followed by "_startup". The startup gauge records the
 // time of creation as fractional Unix seconds (derived from UnixNano),
 // labeled with the application version from appInfo. Both appInfo and
 // timeSvc must be non-nil.
