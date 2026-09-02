@@ -1,11 +1,11 @@
 module github.com/kattecon/akgoli
 
-go 1.25.3
+go 1.26.0
 
 require (
 	github.com/prometheus/common v0.69.0
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 )
 
 require github.com/rogpeppe/go-internal v1.14.1 // indirect
