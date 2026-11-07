@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/prometheus/common v0.69.0
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.1
 	golang.org/x/crypto v0.56.0
 )
 
@@ -30,6 +30,7 @@ require (
 	github.com/prometheus/procfs v0.16.1 // indirect
 	github.com/ramya-rao-a/go-outline v0.0.0-20210608161538-9736a4bde949 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20250620022241-b7579e27df2b // indirect
 	golang.org/x/mod v0.40.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
@@ -42,12 +43,9 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.2.2
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.23.2
 	go.uber.org/zap v1.28.0
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 // NOTE: Do NOT add golang.org/x/tools/gopls here! It depends (at least it did that at time of writing) on a dev version
