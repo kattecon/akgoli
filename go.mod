@@ -3,12 +3,10 @@ module github.com/kattecon/akgoli
 go 1.26.0
 
 require (
-	github.com/prometheus/common v0.69.0
-	github.com/stretchr/testify v1.11.1
+	github.com/prometheus/common v0.72.0
+	github.com/stretchr/testify v1.12.1
 	golang.org/x/crypto v0.56.0
 )
-
-require github.com/rogpeppe/go-internal v1.14.1 // indirect
 
 require (
 	github.com/BurntSushi/toml v1.5.0 // indirect
@@ -26,28 +24,26 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ogier/pflag v0.0.1 // indirect
-	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/procfs v0.16.1 // indirect
+	github.com/prometheus/client_model v0.6.3 // indirect
+	github.com/prometheus/procfs v0.22.0 // indirect
 	github.com/ramya-rao-a/go-outline v0.0.0-20210608161538-9736a4bde949 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20250620022241-b7579e27df2b // indirect
 	golang.org/x/mod v0.40.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260811182544-a038080d80e5 // indirect
 	golang.org/x/tools v0.49.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 	honnef.co/go/tools v0.7.0 // indirect
 )
 
 require (
 	github.com/agnivade/levenshtein v1.2.2
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/prometheus/client_golang v1.23.2
+	github.com/prometheus/client_golang v1.25.0
 	go.uber.org/zap v1.28.0
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 // NOTE: Do NOT add golang.org/x/tools/gopls here! It depends (at least it did that at time of writing) on a dev version
