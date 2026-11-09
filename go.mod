@@ -3,7 +3,7 @@ module github.com/kattecon/akgoli
 go 1.26.0
 
 require (
-	github.com/prometheus/common v0.72.0
+	github.com/prometheus/common v0.72.1
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/crypto v0.56.0
 )
