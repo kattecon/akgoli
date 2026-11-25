@@ -1,12 +1,6 @@
 module github.com/kattecon/akgoli
 
-go 1.26.0
-
-require (
-	github.com/prometheus/common v0.73.1
-	github.com/stretchr/testify v1.12.1
-	golang.org/x/crypto v0.59.0
-)
+go 1.27.3
 
 require (
 	github.com/BurntSushi/toml v1.5.0 // indirect
@@ -15,12 +9,12 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/caarlos0/svu v1.12.0 // indirect
+	github.com/caarlos0/svu/v3 v3.4.4 // indirect
 	github.com/cespare/reflex v0.3.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/creack/pty v1.1.24 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
-	github.com/gobwas/glob v0.2.3 // indirect
+	github.com/gobwas/glob v1.1.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ogier/pflag v0.0.1 // indirect
@@ -44,7 +38,10 @@ require (
 	github.com/agnivade/levenshtein v1.2.2
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.25.0
+	github.com/prometheus/common v0.73.1
+	github.com/stretchr/testify v1.12.1
 	go.uber.org/zap v1.28.0
+	golang.org/x/crypto v0.59.0
 )
 
 // NOTE: Do NOT add golang.org/x/tools/gopls here! It depends (at least it did that at time of writing) on a dev version
